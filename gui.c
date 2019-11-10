@@ -33,7 +33,7 @@
 #define COLOR_CYAN_BOLD "\033[1;36m"
 #define COLOR_RESET "\033[0m"
 
-#define MAX_POS (56)
+#define MAX_POS (60)
 
 static int pos = 0;
 static uint8_t dut = 1;
@@ -41,7 +41,6 @@ static uint8_t left = 0;
 static char last_message_sent[512];
 static char last_message_received[512];
 
-// max x is 56
 void fill()
 {
 	wprintf(L"%s", COLOR_YELLOW);
@@ -89,37 +88,35 @@ void gui_update(void)
 		SPACE(10); wprintf(L"%s DUT %d Input:%s %s", 
 			COLOR_RED_BOLD, dut, COLOR_RESET, last_message_received);
 		LINE(2);
-		BOX_R(W-20); LINE(1);
-		BOX_R(W-20); LINE(1);
-		SPACE(W - pos - 24); fill(); BOX_R(4); LINE(1);
-		SPACE(W - pos - 24); fill(); BOX_R(4); LINE(1);
-		SPACE(W - pos - 24); fill(); BOX_R(4); LINE(1);
-		SPACE(W - pos - 24); fill(); BOX_R(4); LINE(1);
-		SPACE(W - pos - 24); fill(); BOX_R(4); LINE(1);
-		BOX_R(W-20); LINE(1);
-		BOX_R(W-20); LINE(1);
+		BOX_R(W-15); LINE(1);
+		BOX_R(W-15); LINE(1);
+		SPACE(W - pos - 19); fill(); BOX_R(4); LINE(1);
+		SPACE(W - pos - 19); fill(); BOX_R(4); LINE(1);
+		SPACE(W - pos - 19); fill(); BOX_R(4); LINE(1);
+		SPACE(W - pos - 19); fill(); BOX_R(4); LINE(1);
+		SPACE(W - pos - 19); fill(); BOX_R(4); LINE(1);
+		BOX_R(W-15); LINE(1);
+		BOX_R(W-15); LINE(1);
 		LINE(1);
 		return;
 	}
 	
 	// Input from right side of terminal
-	SPACE(20); wprintf(L"%sDUT %d Input:%s %s", 
+	SPACE(15); wprintf(L"%sDUT %d Input:%s %s", 
 		COLOR_BLUE_BOLD, dut, COLOR_RESET, last_message_received);
 	LINE(2);
-	SPACE(20); BOX_B(W-20);
-	SPACE(20); BOX_B(W-20);
-	SPACE(20); BOX_B(4); fill(); LINE(1);
-	SPACE(20); BOX_B(4); fill(); LINE(1);
-	SPACE(20); BOX_B(4); fill(); LINE(1);
-	SPACE(20); BOX_B(4); fill(); LINE(1);
-	SPACE(20); BOX_B(4); fill(); LINE(1);
-	SPACE(20); BOX_B(W-20);
-	SPACE(20); BOX_B(W-20);
+	SPACE(15); BOX_B(W-15);
+	SPACE(15); BOX_B(W-15);
+	SPACE(15); BOX_B(4); fill(); LINE(1);
+	SPACE(15); BOX_B(4); fill(); LINE(1);
+	SPACE(15); BOX_B(4); fill(); LINE(1);
+	SPACE(15); BOX_B(4); fill(); LINE(1);
+	SPACE(15); BOX_B(4); fill(); LINE(1);
+	SPACE(15); BOX_B(W-15);
+	SPACE(15); BOX_B(W-15);
 	LINE(7);
-	SPACE(20); wprintf(L"%sDUT %d Sending Data:%s %s ⇉", 
+	SPACE(15); wprintf(L"%sDUT %d Sending Data:%s %s ⇉", 
 		COLOR_BLUE_BOLD, dut, COLOR_RESET, last_message_sent);
 	LINE(5);
-
-
 }
 
