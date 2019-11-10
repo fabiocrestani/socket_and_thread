@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <locale.h>
 #include <wchar.h>
+#include <string.h>
 
 #include "gui.h"
 
@@ -32,63 +33,92 @@
 #define COLOR_CYAN_BOLD "\033[1;36m"
 #define COLOR_RESET "\033[0m"
 
+#define MAX_POS (56)
+
+static int pos = 0;
+static uint8_t dut = 1;
+static uint8_t left = 0;
+static char last_message_sent[512];
+static char last_message_received[512];
+
 // max x is 56
-void fill(int x)
+void fill()
 {
 	wprintf(L"%s", COLOR_YELLOW);
 
-	for (int i = 0; i < x; i++)
+	for (int i = 0; i < pos; i++)
 		wprintf(L"┃");
 
 	wprintf(L"%s", COLOR_RESET);
 }
 
-void gui_init(uint8_t left)
+void gui_init(uint8_t new_dut, uint8_t new_left)
 {
-	int x = 10;
-
-	// Left side of terminal
-	if (left)
-	{
-		LINE(6);
-		SPACE(15); wprintf(L"⇇"); SPACE(26); wprintf(L"%sDUT 2 Sending Data%s", 
-			COLOR_RED_BOLD, COLOR_RESET);
-		LINE(6);
-		SPACE(41); wprintf(L"%s DUT 2 Input Buffer%s\n\n", COLOR_RED_BOLD, COLOR_RESET);
-		BOX_R(W-20); LINE(1);
-		BOX_R(W-20); LINE(1);
-		SPACE(W-x - 24); fill(x); BOX_R(4); LINE(1);
-		SPACE(W-x - 24); fill(x); BOX_R(4); LINE(1);
-		SPACE(W-x - 24); fill(x); BOX_R(4); LINE(1);
-		SPACE(W-x - 24); fill(x); BOX_R(4); LINE(1);
-		SPACE(W-x - 24); fill(x); BOX_R(4); LINE(1);
-		BOX_R(W-20); LINE(1);
-		BOX_R(W-20); LINE(1);
-		return;
-	}
-	
-	// Right side of terminal
-	SPACE(20); wprintf(L"%sDUT 1 Input Buffer%s", COLOR_BLUE_BOLD, COLOR_RESET);
-	LINE(2);
-	SPACE(20); BOX_B(W-20);
-	SPACE(20); BOX_B(W-20);
-	SPACE(20); BOX_B(4); fill(x); LINE(1);
-	SPACE(20); BOX_B(4); fill(x); LINE(1);
-	SPACE(20); BOX_B(4); fill(x); LINE(1);
-	SPACE(20); BOX_B(4); fill(x); LINE(1);
-	SPACE(20); BOX_B(4); fill(x); LINE(1);
-	SPACE(20); BOX_B(W-20);
-	SPACE(20); BOX_B(W-20);
-	LINE(8); 
-	SPACE(20); wprintf(L"%sDUT 1 Sending Data                       %s⇉", 
-		COLOR_BLUE_BOLD, COLOR_RESET);
-	LINE(4);
-
+	dut = new_dut;
+	left = new_left;
+	gui_update();
 }
+
+void gui_increment_pos(void)
+{
+	pos++;
+	if (pos > MAX_POS) pos = 0;	
+}
+
+void gui_set_last_message_sent(char message[])
+{
+	strcpy(last_message_sent, message);
+}
+
+void gui_set_last_message_received(char message[])
+{
+	strcpy(last_message_received, message);
+}
+
 
 void gui_update(void)
 {
-
+	// Input from left side of terminal
+	if (left)
+	{
+		LINE(7);
+		SPACE(5); wprintf(L"⇇"); SPACE(5); 
+		wprintf(L"%sDUT %d Sending Data:%s %s", 
+			COLOR_RED_BOLD, dut, COLOR_RESET, last_message_sent);
+		LINE(4);
+		SPACE(10); wprintf(L"%s DUT %d Input:%s %s", 
+			COLOR_RED_BOLD, dut, COLOR_RESET, last_message_received);
+		LINE(2);
+		BOX_R(W-20); LINE(1);
+		BOX_R(W-20); LINE(1);
+		SPACE(W - pos - 24); fill(); BOX_R(4); LINE(1);
+		SPACE(W - pos - 24); fill(); BOX_R(4); LINE(1);
+		SPACE(W - pos - 24); fill(); BOX_R(4); LINE(1);
+		SPACE(W - pos - 24); fill(); BOX_R(4); LINE(1);
+		SPACE(W - pos - 24); fill(); BOX_R(4); LINE(1);
+		BOX_R(W-20); LINE(1);
+		BOX_R(W-20); LINE(1);
+		LINE(1);
+		return;
+	}
+	
+	// Input from right side of terminal
+	SPACE(20); wprintf(L"%sDUT %d Input:%s %s", 
+		COLOR_BLUE_BOLD, dut, COLOR_RESET, last_message_received);
+	LINE(2);
+	SPACE(20); BOX_B(W-20);
+	SPACE(20); BOX_B(W-20);
+	SPACE(20); BOX_B(4); fill(); LINE(1);
+	SPACE(20); BOX_B(4); fill(); LINE(1);
+	SPACE(20); BOX_B(4); fill(); LINE(1);
+	SPACE(20); BOX_B(4); fill(); LINE(1);
+	SPACE(20); BOX_B(4); fill(); LINE(1);
+	SPACE(20); BOX_B(W-20);
+	SPACE(20); BOX_B(W-20);
+	LINE(7);
+	SPACE(20); wprintf(L"%sDUT %d Sending Data:%s %s ⇉", 
+		COLOR_BLUE_BOLD, dut, COLOR_RESET, last_message_sent);
+	LINE(5);
 
 
 }

@@ -7,45 +7,64 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-
 #include <locale.h>
 #include <wchar.h>
 
 #include "udp.h"
-#include "string_to_can_producer.h"
 #include "gui.h"
+
+void usage()
+{
+	wprintf(L"Invalid parameters.\n\n\
+Usage: can_visual_ping_pong [dut] [l]\n\
+  dut: 1 or 2\n\
+  l (optional): to set the visualization on the left side of the terminal\n\n\
+DUT 1 will send a counter with CAN ID 0x01\n\
+DUT 1 will send a counter with CAN ID 0x02\n\
+Default period is 2 seconds\n");
+}
 
 int main(int argc, char **argv)
 {
 	setlocale(LC_ALL, "");
 	fwide(stdout, 1);
 
-	uint32_t can_id = 0x62;
-	char input[] = "sudo date --set \"20190521 20:54\"";
-	char left = 0;
+	uint8_t left = 0;
+	uint8_t dut = 1;
 
-	if ((argc > 1) && (strcmp(argv[1], "l") == 0))
+	if ((argc > 1) && (strcmp(argv[1], "1") == 0))
+	{
+		dut = 1;
+	}
+	else if ((argc > 1) && (strcmp(argv[1], "2") == 0))
+	{
+		dut = 2;
+	}
+	else
+	{
+		usage();
+		return 1;
+	}
+
+	if ((argc > 2) && (strcmp(argv[2], "l") == 0))
 	{
 		left = 1;
 	}
 
-	gui_init(left);
-	gui_update();
+	gui_init(dut, left);
 
-	return 0;
+	//udp_init("localhost", 1234);
 
-	udp_init("localhost", 1234);
-
-	if (argc > 1)
+	while (1)
 	{
-		logger_log("Sending string \"%s\" to CAN ID 0x%02x\n", argv[1], can_id);
-		can_send_string(can_id, argv[1]);
-	} 
-	else 
-	{
-		logger_log("Sending string \"%s\" to CAN ID 0x%02x\n", input, can_id);
-		can_send_string(can_id, input);
-	}	
+		// can_send();
+		// can_receive();
+		gui_increment_pos();
+		gui_set_last_message_received("hi");
+		gui_set_last_message_sent("hello");
+		gui_update();
+		sleep(2);
+	}
 
 	return 0;
 }

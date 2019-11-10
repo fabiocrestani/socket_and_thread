@@ -12,7 +12,10 @@
 
 #include "logger.h"
 
-void gui_init(uint8_t left);
+void gui_init(uint8_t dut, uint8_t left);
 void gui_update(void);
+void gui_increment_pos(void);
+void gui_set_last_message_sent(char message[]);
+void gui_set_last_message_received(char message[]);
 
 #endif // __GUI_H__
