@@ -9,6 +9,7 @@
 //#define DEBUG_SHOW_FILE_PATH	// Para mostrar também o nome do arquivo
 
 #define DEBUG_BUFFER_SIZE 4096
+#define LOGGER_SIMPLE (1)
 
 void logger_dump_hex(char *buffer, unsigned int size);
 

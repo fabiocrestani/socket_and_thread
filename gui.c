@@ -102,6 +102,7 @@ void gui_update(void)
 	}
 	
 	// Input from right side of terminal
+	LINE(1);
 	SPACE(15); wprintf(L"%sDUT %d Input:%s %s", 
 		COLOR_BLUE_BOLD, dut, COLOR_RESET, last_message_received);
 	LINE(2);

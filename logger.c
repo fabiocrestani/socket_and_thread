@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include <locale.h>
+#include <wchar.h>
 
 #include "logger.h"
 
@@ -37,8 +39,15 @@ void loggerDo(const char * file_name, const char * function_name,
 	#ifdef DEBUG_SHOW_FILE_PATH
 		sprintf(format, "[%s][%s][%d]: ",file_name, function_name, line_number);
 	#else
-		sprintf(format, "[%s][%d]: ", function_name, line_number);
-		(void) file_name;
+		#ifdef LOGGER_SIMPLE
+			sprintf(format, " ");
+			(void) file_name;
+			(void) function_name;
+			(void) line_number;
+		#else
+			sprintf(format, "[%s][%d]: ", function_name, line_number);
+			(void) file_name;
+		#endif
 	#endif
 
 	strcat(format, format_string);
@@ -47,6 +56,6 @@ void loggerDo(const char * file_name, const char * function_name,
 	vsprintf(temp, format, marker);
 	va_end(marker);
 
-	printf("%s", temp);
+	wprintf(L"%s", temp);
 }
 

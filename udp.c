@@ -32,6 +32,10 @@ struct hostent *he;
 
 uint8_t udp_init(char server_ip_address[], uint32_t port_number)
 {
+	uint32_t local_port_number = port_number;
+	uint32_t remote_port_number = (port_number == 1235) ?
+		(1236) : (1235);
+
 	if ((he = gethostbyname(server_ip_address)) == NULL)
 	{
 		return FALSE;
@@ -44,13 +48,13 @@ uint8_t udp_init(char server_ip_address[], uint32_t port_number)
 
 	// Remote client
 	their_addr.sin_family = AF_INET;
-	their_addr.sin_port = htons(port_number);
+	their_addr.sin_port = htons(remote_port_number);
 	their_addr.sin_addr = *((struct in_addr *) he->h_addr);
 	bzero(&(their_addr.sin_zero), 8);
 
 	// Local server
 	my_addr.sin_family = AF_INET;
-    my_addr.sin_port = htons(1234);
+    my_addr.sin_port = htons(local_port_number);
     my_addr.sin_addr.s_addr = INADDR_ANY;
     bzero(&(my_addr.sin_zero), 8);
 
@@ -86,10 +90,10 @@ uint8_t udp_send(uint32_t can_id, unsigned char data[], uint32_t len)
 	len = len + 2;
 
 #ifdef LOG_UDP_MESSAGES
-	logger_log("Sending UDP message:\n\t\t0x%02x 0x%02x 0x%02x 0x%02x 0x%02x\
- 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x (%s) \t (%d)\n", 
+	logger_log("Sending UDP: 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x\
+ 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x (%d)\n", 
 		buffer[0], buffer[1], buffer[2], buffer[3], buffer[4], buffer[5], 
-		buffer[6], buffer[7], buffer[8], buffer[9], data, len);
+		buffer[6], buffer[7], buffer[8], buffer[9], len);
 #endif
 
 	int numbytes = sendto(socket_udp, buffer, len, 0, 
@@ -119,10 +123,10 @@ uint8_t udp_receive(uint32_t *can_id, unsigned char data[], uint32_t *len)
     buffer[numbytes] = '\0';
 
 #ifdef LOG_UDP_MESSAGES
-	logger_log("Received UDP message:\n\t\t0x%02x 0x%02x 0x%02x 0x%02x 0x%02x \
-0x%02x 0x%02x 0x%02x 0x%02x 0x%02x (%s) \t (%d)\n", 
+	logger_log("Received UDP: 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x \
+0x%02x 0x%02x 0x%02x 0x%02x 0x%02x (%d)\n", 
 		buffer[0], buffer[1], buffer[2], buffer[3], buffer[4], buffer[5], 
-		buffer[6], buffer[7], buffer[8], buffer[9], buffer, numbytes);
+		buffer[6], buffer[7], buffer[8], buffer[9], numbytes);
 #endif
 
 	*can_id = buffer[0];
