@@ -58,3 +58,23 @@ void loggerDo(const char * file_name, const char * function_name,
 	printf("%s", temp);
 }
 
+void logger_log_message(char header[], unsigned char buffer[], int numbytes)
+{
+	unsigned int log_max_len = 2048;
+	char log_temp[log_max_len];
+	char temp2[8];
+	sprintf(log_temp, "[%s] (%d) ", header, numbytes);
+	for (int i = 0; i < numbytes; i++)
+	{
+		if ((strlen(log_temp) + 8) >= log_max_len)
+		{
+			strcat(log_temp, "...");
+			break;
+		}
+		sprintf(temp2, "0x%02x ", buffer[i]);
+		strcat(log_temp, temp2);
+	}
+	strcat(log_temp, "\n");
+	logger_log(log_temp);
+}
+

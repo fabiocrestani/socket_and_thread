@@ -77,29 +77,10 @@ uint8_t udp_deinit(void)
 	return TRUE;
 }
 
-uint8_t udp_send(uint32_t can_id, unsigned char data[], uint32_t len)
+uint8_t udp_send(unsigned char data[], uint32_t len)
 {
-	unsigned char buffer[256];
-	
-	buffer[0] = (unsigned char) can_id;
-	buffer[1] = (unsigned char) len;
-	
-	for (uint32_t i = 0; i < len; i++)
-	{
-		buffer[i + 2] = data[i];
-	}
-
-	len = len + 2;
-
-#ifdef LOG_UDP_MESSAGES
-	logger_log("Sending UDP: 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x\
- 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x (%d)\n", 
-		buffer[0], buffer[1], buffer[2], buffer[3], buffer[4], buffer[5], 
-		buffer[6], buffer[7], buffer[8], buffer[9], len);
-#endif
-
-	int numbytes = sendto(socket_udp, buffer, len, 0, 
-				(struct sockaddr *)&their_addr, sizeof(struct sockaddr));
+	int numbytes = sendto(socket_udp, data, len, 0, 
+				(struct sockaddr *) &their_addr, sizeof(struct sockaddr));
 
     if (numbytes == -1) 
 	{
@@ -110,45 +91,20 @@ uint8_t udp_send(uint32_t can_id, unsigned char data[], uint32_t len)
 	return TRUE;
 }
 
-uint8_t udp_receive(uint32_t *can_id, unsigned char data[], uint32_t *len)
+uint8_t udp_receive(unsigned char data[], uint32_t *len)
 {
-	unsigned char buffer[UDP_RECEIVE_BUFFER_SIZE];
 	unsigned int addr_len = 0;
 
-	int numbytes = recvfrom(socket_udp, buffer, UDP_RECEIVE_BUFFER_SIZE, 0, 
+	int numbytes = recvfrom(socket_udp, data, UDP_RECEIVE_BUFFER_SIZE, 0, 
 				(struct sockaddr *) &their_addr, &addr_len);
 	if (numbytes == -1) 
 	{
 		return FALSE;
     }
 
-    buffer[numbytes] = '\0';
+	*len = numbytes;
 
-	unsigned int log_max_len = 2048;
-	char log_temp[log_max_len];
-	char temp2[8];
-	sprintf(log_temp, "Received UDP: (%d) ", numbytes);
-	for (int i = 0; i < numbytes; i++)
-	{
-		if ((strlen(log_temp) + 8) >= log_max_len)
-		{
-			strcat(log_temp, "...");
-			break;
-		}
-		sprintf(temp2, "0x%02x ", buffer[i]);
-		strcat(log_temp, temp2);
-	}
-	strcat(log_temp, "\n");
-	logger_log(log_temp);
+	logger_log_message("Received UDP", data, numbytes);
 
-
-	*can_id = buffer[0];
-	*len = buffer[1];
-	memset(data, 0, 8);
-	for (unsigned int i = 0; i < *len; i++)
-	{
-		data[i] = buffer[i + 2];
-	}
-
-	return FALSE;
+	return TRUE;
 }

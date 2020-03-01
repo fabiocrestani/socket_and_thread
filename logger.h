@@ -16,6 +16,8 @@ void logger_dump_hex(char *buffer, unsigned int size);
 void loggerDo(const char * file_name, const char * function_name, 
 	unsigned int line_number, const char * format_string, ...);
 
+void logger_log_message(char header[], unsigned char buffer[], int numbytes);
+
 // Cuidado: a string formatada pela função debug não deverá ultrapassar o 
 // valor DEBUG_BUFFER_SIZE
 #define logger_log(...) loggerDo(__FILE__, __func__, __LINE__, __VA_ARGS__)
