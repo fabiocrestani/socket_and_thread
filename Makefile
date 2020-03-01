@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-I. -Wall -Wextra -lpthread
-OBJS = udp.o main.o logger.o crc.o
+OBJS = udp.o main.o logger.o crc.o circular_buffer.o
 
 RM := rm -rf
 
