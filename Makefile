@@ -1,21 +1,21 @@
 CC=gcc
 CFLAGS=-I. -Wall -Wextra -lpthread
-OBJS = udp.o can.o can_visual_send_receive.o logger.o crc.o gui.o
+OBJS = udp.o main.o logger.o crc.o
 
 RM := rm -rf
 
-all: can_visual_send_receive
+all: socket_and_thread
 
-can_visual_send_receive: $(OBJS)
+socket_and_thread: $(OBJS)
 	$(CC) -o $@ $^ $(CFLAGS)
 	#$(RM) *.o
 
 %.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-run: can_visual_send_receive
-	./can_visual_send_receive $(ARGS) &
+run: socket_and_thread
+	./socket_and_thread $(ARGS)
 
 clean:
-	-$(RM) $(EXECUTABLES)$(OBJS)$(C_DEPS) can_visual_send_receive
+	-$(RM) $(EXECUTABLES)$(OBJS)$(C_DEPS) socket_and_thread
 	-$(RM) *.o

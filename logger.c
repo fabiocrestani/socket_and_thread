@@ -8,7 +8,6 @@
 #include <string.h>
 #include <stdarg.h>
 #include <locale.h>
-#include <wchar.h>
 
 #include "logger.h"
 
@@ -56,6 +55,6 @@ void loggerDo(const char * file_name, const char * function_name,
 	vsprintf(temp, format, marker);
 	va_end(marker);
 
-	wprintf(L"%s", temp);
+	printf("%s", temp);
 }
 

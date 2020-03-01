@@ -64,7 +64,9 @@ uint8_t udp_init(char server_ip_address[], uint32_t port_number)
 		return FALSE;
     }
 
-	//logger_log("UDP initialized on %s:%d\n", server_ip_address, port_number);
+	logger_log("UDP initialized. Local server port: %d \
+Remote server address and port: %s:%d\n", 
+local_port_number, server_ip_address, remote_port_number);
 
 	return TRUE;
 }
@@ -122,12 +124,23 @@ uint8_t udp_receive(uint32_t *can_id, unsigned char data[], uint32_t *len)
 
     buffer[numbytes] = '\0';
 
-#ifdef LOG_UDP_MESSAGES
-	logger_log("Received UDP: 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x \
-0x%02x 0x%02x 0x%02x 0x%02x 0x%02x (%d)\n", 
-		buffer[0], buffer[1], buffer[2], buffer[3], buffer[4], buffer[5], 
-		buffer[6], buffer[7], buffer[8], buffer[9], numbytes);
-#endif
+	unsigned int log_max_len = 2048;
+	char log_temp[log_max_len];
+	char temp2[8];
+	sprintf(log_temp, "Received UDP: (%d) ", numbytes);
+	for (int i = 0; i < numbytes; i++)
+	{
+		if ((strlen(log_temp) + 8) >= log_max_len)
+		{
+			strcat(log_temp, "...");
+			break;
+		}
+		sprintf(temp2, "0x%02x ", buffer[i]);
+		strcat(log_temp, temp2);
+	}
+	strcat(log_temp, "\n");
+	logger_log(log_temp);
+
 
 	*can_id = buffer[0];
 	*len = buffer[1];
