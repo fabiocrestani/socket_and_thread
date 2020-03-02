@@ -9,11 +9,13 @@
 #include <stdint.h>
 #include <pthread.h>
 
-#define BUFFER_SIZE 1024*2
+#define DEFAULT_BUFFER_SIZE 256
 
 #define DEBUG_CIRCULAR_BUFFER
 
 typedef struct _circularBuffer {
+	uint32_t buffer_size;
+
 	uint16_t idx_prod;
 	uint16_t idx_cons;
 	uint16_t element_counter;
