@@ -74,7 +74,10 @@ void * message_receiver_thread_handler(void * args)
 			memcpy(message.data, received_data, received_len);
 			buffer_put(&buffer, (void *) &message);
 			buffer_set_ready(&buffer, 1);
-			printf(" Message was received. Buffer size is %d\n", buffer.element_counter);
+			printf(" Message was received. Buffer size is %d %s\n", 
+				buffer.element_counter, 
+				buffer.element_counter == buffer.buffer_size ? 
+				"Buffer is full!" : "");
 		}
 	}
 
@@ -85,18 +88,23 @@ void * message_receiver_thread_handler(void * args)
 void * message_handler_thread_handler(void * args)
 {
 	(void) args;
-	
+
 	while (running) 
 	{
-		buffer_wait_ready(&buffer);
-
-		if (!buffer_is_empty(&buffer))
+		if (buffer_is_empty(&buffer))
+		{
+			buffer_wait_ready(&buffer);
+		}
+		else
 		{
 			Message message;
 			buffer_pop(&buffer, (void *) &message);
 			logger_log_message("Message handler", message.data, message.len);
 			buffer_set_ready(&buffer, 0);
 			printf(" Message was handled. Buffer size is %d\n", buffer.element_counter);
+
+			// Dummy delay, for testing only
+			//usleep(1000 * 100);
 		}
 	}
 

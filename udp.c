@@ -104,7 +104,9 @@ uint8_t udp_receive(unsigned char data[], uint32_t *len)
 
 	*len = numbytes;
 
+#ifdef LOG_UDP_MESSAGES
 	logger_log_message("Received UDP", data, numbytes);
+#endif
 
 	return TRUE;
 }

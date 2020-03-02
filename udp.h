@@ -12,7 +12,7 @@
 
 #include "logger.h"
 
-#define LOG_UDP_MESSAGES
+//#define LOG_UDP_MESSAGES
 
 uint8_t udp_init(char server_ip_address[], uint32_t port_number);
 uint8_t udp_deinit(void);
