@@ -23,3 +23,10 @@ Reference: https://linux.die.net/man/3/pthread_cond_init
 	3.1 the condition is that the buffer is not empty
 	3.2 this wait does not consume resources as a while(1) loop
 4. lastely, message_handler_thread_handler() will call buffer_set_ready(0)
+
+### Hint
+To check CPU utilization, run `watch -n 0.1  ps -C socket_and_thread -o %cpu,%mem`
+
+The CPU usage of a naive implementation (using poll-loops) was about 12%.
+The CPU usage using the conditional mutex is about 1%.
+
