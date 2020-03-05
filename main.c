@@ -87,7 +87,11 @@ void * message_receiver_thread_handler(void * args)
 // Receives one message from the circular buffer
 void * message_handler_thread_handler(void * args)
 {
-	(void) args;
+	int thread_id = *((int *) args);
+	free(args);
+	int counter_messages = 0;
+
+	printf("Starting message handler %d\n", thread_id);
 
 	while (running) 
 	{
@@ -101,7 +105,9 @@ void * message_handler_thread_handler(void * args)
 			buffer_pop(&buffer, (void *) &message);
 			logger_log_message("Message handler", message.data, message.len);
 			buffer_set_ready(&buffer, 0);
-			printf(" Message was handled. Buffer size is %d\n", buffer.element_counter);
+			counter_messages++;
+			printf(" Message was handled by handler %d (total: %d). Buffer size is %d\n",
+				thread_id, counter_messages, buffer.element_counter);
 
 			// Dummy delay, for testing only
 			//usleep(1000 * 100);
@@ -120,9 +126,16 @@ void message_receiver_init(void)
 
 void message_handler_init(void)
 {
-	printf("Starting message handler\n");
-	pthread_t thread;
-	pthread_create(&thread, NULL, message_handler_thread_handler, 0);
+	const int num_of_threads = 3;
+	pthread_t thread_message_handler[num_of_threads];
+
+	for (int i = 0; i < num_of_threads; i++)
+	{
+		int * index = malloc(sizeof(* index));
+		*index = i;
+		pthread_create(&thread_message_handler[i], NULL, 
+			message_handler_thread_handler, index);
+	}
 }
 
 

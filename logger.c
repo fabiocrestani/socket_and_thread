@@ -63,7 +63,7 @@ void logger_log_message(char header[], unsigned char buffer[], int numbytes)
 	unsigned int log_max_len = 2048;
 	char log_temp[log_max_len];
 	char temp2[8];
-	sprintf(log_temp, "[%s] (%d) ", header, numbytes);
+	sprintf(log_temp, "[%s] (%d bytes) ", header, numbytes);
 	for (int i = 0; i < numbytes; i++)
 	{
 		if ((strlen(log_temp) + 8) >= log_max_len)
